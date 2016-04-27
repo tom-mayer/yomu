@@ -11,6 +11,8 @@ class Yomu
   GEMPATH = File.dirname(File.dirname(__FILE__))
   JARPATH = File.join(Yomu::GEMPATH, 'jar', 'tika-app-1.11.jar')
   DEFAULT_SERVER_PORT = 9293 # an arbitrary, but perfectly cromulent, port
+  REMOTE = false # enable to use a remote server that is expected to be running
+  SERVER_ADDRESS = 'localhost' # the remote server hosting a tika server
 
   @@server_port = nil
   @@server_pid = nil
@@ -22,7 +24,7 @@ class Yomu
   #   metadata = Yomu.read :metadata, data
 
   def self.read(type, data)
-    result = @@server_pid ? self._server_read(type, data) : self._client_read(type, data)
+    result = @@server_pid || REMOTE ? self._server_read(type, data) : self._client_read(type, data)
 
     case type
     when :text
@@ -57,7 +59,7 @@ class Yomu
 
 
   def self._server_read(_, data)
-    s = TCPSocket.new('localhost', @@server_port)
+    s = TCPSocket.new( SERVER_ADDRESS, @@server_port)
     file = StringIO.new(data, 'r')
 
     while 1
