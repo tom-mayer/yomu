@@ -24,7 +24,7 @@ class Yomu
   #   metadata = Yomu.read :metadata, data
 
   def self.read(type, data)
-    result = @@server_pid || REMOTE ? self._server_read(type, data) : self._client_read(type, data)
+    result = @@server_pid || Yomu::REMOTE ? self._server_read(type, data) : self._client_read(type, data)
 
     case type
     when :text
@@ -59,7 +59,7 @@ class Yomu
 
 
   def self._server_read(_, data)
-    s = TCPSocket.new( SERVER_ADDRESS, @@server_port)
+    s = TCPSocket.new( Yomu::SERVER_ADDRESS, @@server_port)
     file = StringIO.new(data, 'r')
 
     while 1
